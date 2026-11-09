@@ -1,0 +1,198 @@
+/* Terminal Panel Styles */
+.terminal-panel {
+  background: #000;
+  border-top: 2px solid #00ff00;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Courier New', monospace;
+  position: relative;
+  resize: vertical;
+  overflow: hidden;
+}
+
+.terminal-resize-handle {
+  position: absolute;
+  top: -3px;
+  left: 0;
+  right: 0;
+  height: 6px;
+  cursor: row-resize;
+  background: transparent;
+  z-index: 100;
+}
+
+.terminal-resize-handle:hover .resize-line {
+  background: #00ff00;
+}
+
+.resize-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 2px;
+  background: #333;
+  border-radius: 2px;
+  transition: background 0.2s;
+}
+
+.terminal-header {
+  background: #1a1a1a;
+  border-bottom: 1px solid #00ff00;
+  padding: 8px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #00ff00;
+  font-size: 0.9rem;
+  min-height: 35px;
+}
+
+.current-id-indicator {
+  color: #ffff00;
+  font-weight: bold;
+}
+
+.terminal-help {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.terminal-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  min-height: 0;
+}
+
+.terminal-history {
+  flex: 1;
+  padding: 10px 15px;
+  overflow-y: auto;
+  color: #00ff00;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  background: #000;
+}
+
+.terminal-line {
+  margin-bottom: 2px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.terminal-line.command {
+  color: #ffff00;
+  font-weight: bold;
+}
+
+.terminal-line.output {
+  color: #00ff00;
+}
+
+.terminal-input-line {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  background: #000;
+  border-top: 1px solid #333;
+}
+
+.terminal-prompt {
+  color: #ffff00;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  outline: none;
+  caret-color: #00ff00;
+}
+
+.terminal-input::placeholder {
+  color: #555;
+}
+
+/* Feedback Effects */
+.feedback-correct {
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+  animation: correctFlash 1s ease-out;
+}
+
+.feedback-incorrect {
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+  animation: incorrectFlash 1s ease-out;
+}
+
+@keyframes correctFlash {
+  0% { background-color: rgba(0, 255, 0, 0.1); }
+  50% { background-color: rgba(0, 255, 0, 0.2); }
+  100% { background-color: transparent; }
+}
+
+@keyframes incorrectFlash {
+  0% { background-color: rgba(255, 0, 0, 0.1); }
+  50% { background-color: rgba(255, 0, 0, 0.2); }
+  100% { background-color: transparent; }
+}
+
+/* Score Notification */
+.score-notification-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3000;
+  pointer-events: none;
+}
+
+.score-notification-center {
+  font-size: 2rem;
+  font-weight: bold;
+  padding: 15px 25px;
+  border-radius: 10px;
+  border: 2px solid;
+  font-family: 'Courier New', monospace;
+  animation: scoreNotificationCenter 2s ease-out forwards;
+}
+
+.score-notification-center.positive {
+  color: #00ff00;
+  background: rgba(0, 255, 0, 0.1);
+  border-color: #00ff00;
+}
+
+.score-notification-center.negative {
+  color: #ff4444;
+  background: rgba(255, 68, 68, 0.1);
+  border-color: #ff4444;
+}
+
+@keyframes scoreNotificationCenter {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  40% {
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}

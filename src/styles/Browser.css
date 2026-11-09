@@ -1,0 +1,213 @@
+/* Browser Modal Styles */
+.browser-modal {
+  background: #0a0a0a;
+  border: 2px solid #00ff00;
+  border-radius: 8px;
+  width: 95%;
+  max-width: 1000px;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Courier New', monospace;
+}
+
+.browser-header-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vm-icon {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) saturate(100%) invert(100%);
+}
+
+.browser-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notes-btn {
+  background: none;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', monospace;
+}
+
+.notes-btn:hover {
+  background: #00ff00;
+  color: #000;
+  transform: scale(1.05);
+}
+
+.notes-icon {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) saturate(100%) invert(67%) sepia(71%) saturate(3458%) hue-rotate(71deg) brightness(101%) contrast(101%);
+}
+
+.notes-btn:hover .notes-icon {
+  filter: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%);
+}
+
+.browser-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: #0a0a0a;
+}
+
+.browser-address-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+.browser-input {
+  flex: 1;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 3px;
+  color: #00ff00;
+  padding: 8px 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.browser-input:focus {
+  outline: none;
+  border-color: #00ff00;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+.browser-go-btn {
+  background: #1a1a1a;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  padding: 8px 16px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  transition: all 0.2s;
+}
+
+.browser-go-btn:hover {
+  background: #00ff00;
+  color: #000;
+}
+
+.browser-content {
+  flex: 1;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  color: #00ff00;
+  min-height: 0; /* Important for flex container scrolling */
+  max-height: calc(80vh - 200px); /* Ensure it doesn't exceed modal height */
+}
+
+.browser-placeholder {
+  padding: 40px;
+  text-align: center;
+  color: #00ff00;
+}
+
+.browser-placeholder h3 {
+  color: #00ff00;
+  margin-bottom: 20px;
+}
+
+.browser-placeholder ul {
+  text-align: left;
+  max-width: 400px;
+  margin: 20px auto;
+  color: #888;
+}
+
+.browser-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: #00ff00;
+  background: #0a0a0a;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.security-warning {
+  background: #1a1a1a;
+  border: 1px solid #666;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.malicious-site .security-warning {
+  border-color: #ff4444;
+  background: #2a1a1a;
+  color: #ff6666;
+}
+
+.legitimate-site .security-warning {
+  border-color: #44ff44;
+  background: #1a2a1a;
+  color: #66ff66;
+}
+
+.financial-site .security-warning {
+  border-color: #ffaa44;
+  background: #2a2a1a;
+  color: #ffcc66;
+}
+
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.fake-input, .secure-input {
+  background: #1a1a1a;
+  border: 1px solid #444;
+  color: #00ff00;
+  padding: 8px;
+  margin: 5px;
+  border-radius: 3px;
+  display: block;
+  width: 200px;
+}
+
+.suspicious-btn {
+  background: #ff4444;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.legitimate-btn {
+  background: #44ff44;
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin: 10px;
+}
